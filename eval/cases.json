@@ -1,0 +1,16 @@
+[
+  { "lang": "hi", "text": "मुझे 1000 बॉक्स पेपर पिन चाहिए, रेट क्या है?", "product": "paper-pin", "qty": 1000, "unit": "box" },
+  { "lang": "hi", "text": "पांच सौ डिब्बे सुमन पिन भेज दो", "product": "suman-paper-pin", "qty": 500, "unit": "box" },
+  { "lang": "hi", "text": "bhai brass pin ka rate kya hai? 2000 box lena hai", "product": "garments-brass-pin", "qty": 2000, "unit": "box" },
+  { "lang": "hi", "text": "1000 बॉक्स शर्ट पिन चाहिए, 18 रुपये बॉक्स में दोगे क्या?", "product": "ss-shirt-pin", "qty": 1000, "unit": "box", "offer": 18 },
+  { "lang": "mr", "text": "मला दोन हजार बॉक्स पेपर पिन पाहिजेत, दर काय आहे?", "product": "paper-pin", "qty": 2000, "unit": "box" },
+  { "lang": "mr", "text": "सोळा एमएम पिनचे पाच कार्टन पाहिजेत", "product": "paper-pin-16mm", "qty": 5, "unit": "carton" },
+  { "lang": "mr", "text": "पितळी टाचणी 1000 बॉक्स, 180 रुपयाला द्याल का?", "product": "garments-brass-pin", "qty": 1000, "unit": "box", "offer": 180 },
+  { "lang": "gu", "text": "મને 500 બોક્સ પેપર પિન જોઈએ છે, ભાવ શું છે?", "product": "paper-pin", "qty": 500, "unit": "box" },
+  { "lang": "gu", "text": "બેલ પિન ના 200 બોક્સ જોઈએ, ભાવ કહો", "product": "paper-bell-pin", "qty": 200, "unit": "box" },
+  { "lang": "gu", "text": "1000 બોક્સ ટી પિન, 15 રૂપિયે બોક્સ આપશો?", "product": "ss-t-pin", "qty": 1000, "unit": "box", "offer": 15 },
+  { "lang": "mixed", "text": "Hello, mujhe paper pin chahiye, pachaas carton, aur rate thoda kam karo", "product": "paper-pin", "qty": 50, "unit": "carton" },
+  { "lang": "mixed", "text": "Bhai 36 mm wali pin ke 480 box, Surat delivery, kitna padega?", "product": "pin-36mm", "qty": 480, "unit": "box" },
+  { "lang": "mixed", "text": "Moti pin ka rate bolo, 300 box chahiye", "product": "moti-pin", "qty": 300, "unit": "box" },
+  { "lang": "en", "text": "We need 1000 boxes of silver head pins. What is the price?", "product": "silver-head-pin", "qty": 1000, "unit": "box" }
+]

@@ -1,0 +1,126 @@
+{
+  "review_note": "Products and prices copied from the S S Industries IndiaMART page on 11 Nov 2026. Check every rate, the office hours and the carton sizes, then delete this line.",
+  "business": {
+    "name": "S S Industries",
+    "city": "Vasai (Nalasopara East)",
+    "owner": "Maurya ji",
+    "hours": "Monday to Saturday, 10 am to 7 pm (to be confirmed)",
+    "agent_name": "Priya"
+  },
+  "policies": [
+    "We are a manufacturer of pins under the brand Suman, in business since 1999.",
+    "Prices are per box. Most pins come in 16 to 36 mm and in 70 to 300 g boxes, and the rate depends on size and weight.",
+    "Only the owner can give a discount, a special rate or credit.",
+    "Delivery dates and transport are confirmed by the owner. We ship by road.",
+    "Payment by cash, cheque, DD, card or online transfer."
+  ],
+  "products": [
+    {
+      "id": "paper-pin",
+      "name": "Paper pin (Suman), 16 to 36 mm, tin or nickel plated",
+      "aliases": ["paper pin", "all pin", "alpin", "aalpin", "office pin", "stationery pin", "kagaz pin", "आलपिन", "ऑलपिन", "पेपर पिन", "कागज़ पिन", "कागदी टाचणी", "પેપર પિન", "ટાંકણી", "ઓલપિન"],
+      "units": { "box": { "price": 20, "max": 75 } },
+      "min_order": { "qty": 1000, "unit": "box" },
+      "note": "IndiaMART lists Paper Pin, Stationery Paper Pin, Nickel Plated Paper Pin and Office Paper Pin at Rs 20/box with 'Price Range Rs 20 - 75 per box'."
+    },
+    {
+      "id": "suman-paper-pin",
+      "name": "Suman paper pins (MS)",
+      "aliases": ["suman pin", "suman paper pin", "सुमन पिन", "સુમન પિન"],
+      "units": { "box": { "price": 20 } },
+      "min_order": { "qty": 480, "unit": "box" },
+      "note": "IndiaMART: Rs 20/box, MOQ 480 box, 'Packaging Size 100, Quantity Per Pack 10' (meaning unclear)."
+    },
+    {
+      "id": "paper-pin-16mm",
+      "name": "16 mm paper pin",
+      "aliases": ["16 mm pin", "solah mm", "chhoti pin", "सोलह एमएम पिन", "16 एमएम", "छोटी पिन", "૧૬ એમએમ પિન"],
+      "units": { "box": { "price": 75 }, "carton": { "contains": { "qty": 100, "unit": "box" } } },
+      "min_order": { "qty": 50, "unit": "box" },
+      "note": "IndiaMART: Rs 75/box, MOQ 50 box, 'Master pack of 100 box' (used here as 1 carton = 100 box)."
+    },
+    {
+      "id": "pin-36mm",
+      "name": "36 mm paper pins (decorative)",
+      "aliases": ["36 mm pin", "chhattis mm", "lambi pin", "छत्तीस एमएम", "लंबी पिन", "૩૬ એમએમ પિન"],
+      "units": { "box": { "price": 25 } },
+      "min_order": { "qty": 480, "unit": "box" }
+    },
+    {
+      "id": "paper-bell-pin",
+      "name": "Paper bell pins, 22 / 26 / 32 mm, bright nickel plated",
+      "aliases": ["bell pin", "bel pin", "बेल पिन", "બેલ પિન"],
+      "units": { "box": {} },
+      "note": "IndiaMART shows two different prices (Rs 23/box and Rs 200/box). Left unpriced until the owner confirms."
+    },
+    {
+      "id": "ss-shirt-pin",
+      "name": "Stainless steel shirt pin",
+      "aliases": ["shirt pin", "steel shirt pin", "शर्ट पिन", "शर्ट की पिन", "શર્ટ પિન"],
+      "units": { "box": { "price": 20, "max": 75 } },
+      "min_order": { "qty": 1000, "unit": "box" }
+    },
+    {
+      "id": "ss-t-pin",
+      "name": "Stainless steel T pin",
+      "aliases": ["t pin", "tee pin", "टी पिन", "ટી પિન"],
+      "units": { "box": { "price": 20, "max": 75 } },
+      "min_order": { "qty": 1000, "unit": "box" }
+    },
+    {
+      "id": "ss-pin",
+      "name": "Stainless steel pin",
+      "aliases": ["steel pin", "ss pin", "स्टील पिन", "સ્ટીલ પિન"],
+      "units": { "box": {} },
+      "min_order": { "qty": 1000, "unit": "box" },
+      "note": "IndiaMART shows Rs 275/box but the description says Rs 20 - 75 per box. Left unpriced."
+    },
+    {
+      "id": "moti-pin",
+      "name": "Stainless steel moti pin (bead head)",
+      "aliases": ["moti pin", "मोती पिन", "મોતી પિન"],
+      "units": { "box": {} },
+      "note": "IndiaMART shows Rs 160/box, Rs 20/box and 'Rs 80-110 per box' on different pages. Left unpriced."
+    },
+    {
+      "id": "pearl-pin-36mm",
+      "name": "36 mm stainless steel pearl pin",
+      "aliases": ["pearl pin", "perl pin", "पर्ल पिन", "પર્લ પિન"],
+      "units": { "box": { "price": 200, "max": 500 } }
+    },
+    {
+      "id": "silver-head-pin",
+      "name": "Silver head pin",
+      "aliases": ["silver head pin", "silver pin", "सिल्वर हेड पिन", "સિલ્વર હેડ પિન"],
+      "units": { "box": { "price": 200, "max": 500 } }
+    },
+    {
+      "id": "garments-brass-pin",
+      "name": "Garments brass pin, 250 g box",
+      "aliases": ["brass pin", "garment pin", "kapde ki pin", "पीतल पिन", "पीतल की पिन", "ब्रास पिन", "पितळी टाचणी", "બ્રાસ પિન", "પિત્તળ પિન"],
+      "units": { "box": { "price": 200 } },
+      "min_order": { "qty": 1000, "unit": "box" }
+    },
+    {
+      "id": "brass-shirt-pin",
+      "name": "Brass shirt pin, nickel plated, 250 g box",
+      "aliases": ["brass shirt pin", "ब्रास शर्ट पिन", "પિત્તળ શર્ટ પિન"],
+      "units": { "box": { "price": 275 } },
+      "min_order": { "qty": 1000, "unit": "box" }
+    },
+    {
+      "id": "tachni-pin",
+      "name": "Tachni pin (MS, nickel plated, 300 g pack) for textile and stationery",
+      "aliases": ["tachni", "tachni pin", "टाचणी", "टाचणी पिन", "ટાચણી"],
+      "units": { "packet": {} },
+      "note": "IndiaMART: 'Ask Price'."
+    },
+    {
+      "id": "shirt-packing-pin",
+      "name": "Shirt packing pins, 16 to 36 mm, nickel plated",
+      "aliases": ["packing pin", "shirt packing pin", "पैकिंग पिन", "પેકિંગ પિન"],
+      "units": { "box": {} },
+      "note": "IndiaMART: 'Ask Price'."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haanji calls ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&family=Mukta+Vaani:wght@400;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="cover">
+  <h1>Haanji <small>calls ledger</small></h1>
+  <nav><a href="/">Call desk</a></nav>
+</header>
+<div class="wrap page">
+  <div class="toolbar">
+    <label for="filter">Show</label>
+    <select id="filter">
+      <option value="">All calls</option>
+      <option value="new">New, not called back</option>
+      <option value="offer">With a bargaining offer</option>
+      <option value="check">Needs checking</option>
+      <option value="won">Won</option>
+      <option value="lost">Lost</option>
+    </select>
+    <span class="count" id="count"></span>
+    <a class="btn" href="/api/calls.csv" style="margin-left:auto;text-decoration:none">Download CSV</a>
+  </div>
+  <table class="ledger">
+    <thead><tr><th>When</th><th>Caller</th><th>Wants</th><th>Offer</th><th>Status</th></tr></thead>
+    <tbody id="rows"><tr><td colspan="5" class="none">Loading…</td></tr></tbody>
+  </table>
+</div>
+<script src="/common.js"></script>
+<script src="/dashboard.js"></script>
+</body>
+</html>

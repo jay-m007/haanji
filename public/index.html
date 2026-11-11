@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haanji call desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700&family=Mukta+Vaani:wght@400;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<header class="cover">
+  <h1>Haanji <small id="biz">call desk</small></h1>
+  <nav>
+    <span class="pill" id="health">checking Ollama…</span>
+    <a href="/dashboard">Calls ledger</a>
+  </nav>
+</header>
+<div class="sample" id="sample" hidden>This is the sample price list. Copy <code>catalog.sample.json</code> to <code>catalog.json</code> and put in your real products and rates.</div>
+<main class="desk">
+  <section class="call page" aria-label="Call">
+    <div class="controls">
+      <label for="lang">Caller speaks</label>
+      <select id="lang">
+        <option value="hi">Hindi</option>
+        <option value="mr">Marathi</option>
+        <option value="gu">Gujarati</option>
+        <option value="en">English</option>
+        <option value="mixed">Mixed (Hindi voice input)</option>
+      </select>
+      <button class="btn primary" id="start">Start call</button>
+      <button class="btn danger" id="end" disabled>End call</button>
+      <label><input type="checkbox" id="speak" checked> Read replies aloud</label>
+    </div>
+    <ol class="lines margin" id="lines" aria-live="polite">
+      <li class="empty"><span class="text">Press “Start call”, then play the caller: speak with the mic or type.</span></li>
+    </ol>
+    <div class="error" id="error" role="alert" hidden></div>
+    <form class="say" id="say" autocomplete="off">
+      <button type="button" class="mic" id="mic" aria-label="Speak as the caller" title="Speak as the caller" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+      </button>
+      <input id="text" placeholder="Caller says… e.g. 1000 box paper pin chahiye, rate kya hai?" disabled aria-label="What the caller says">
+      <button class="btn" id="send" disabled>Send</button>
+    </form>
+    <div class="hint" id="hint"></div>
+  </section>
+  <aside class="parchi" aria-label="Order slip">
+    <h2>Parchi</h2>
+    <div class="sub">What the caller wants, filled in as they speak</div>
+    <dl class="who" id="who"></dl>
+    <div id="items"></div>
+    <div id="offers"></div>
+    <div id="extra"></div>
+    <div id="summary"></div>
+  </aside>
+</main>
+<script src="/common.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

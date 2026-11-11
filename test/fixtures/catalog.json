@@ -1,0 +1,46 @@
+{
+  "sample": true,
+  "business": {
+    "name": "S.S. Industries",
+    "city": "Vasai",
+    "owner": "Maurya ji",
+    "hours": "Monday to Saturday, 10 am to 7 pm",
+    "agent_name": "Priya"
+  },
+  "policies": [
+    "Prices are list prices. Only the owner can give a discount, credit or a special rate.",
+    "Delivery dates are confirmed by the owner after checking stock.",
+    "Payment terms are discussed with the owner."
+  ],
+  "products": [
+    {
+      "id": "box-small",
+      "name": "Corrugated box, small (10 x 8 x 6 in) — SAMPLE",
+      "aliases": ["chhota box", "small box", "छोटा बॉक्स", "छोटा डिब्बा", "लहान खोका", "નાનું બોક્સ"],
+      "units": {
+        "piece": { "price": 12 },
+        "carton": { "price": 1100, "contains": { "qty": 100, "unit": "piece" } }
+      },
+      "min_order": { "qty": 5, "unit": "carton" }
+    },
+    {
+      "id": "box-large",
+      "name": "Corrugated box, large (18 x 12 x 12 in) — SAMPLE",
+      "aliases": ["bada box", "large box", "बड़ा बॉक्स", "बड़ा डिब्बा", "मोठा खोका", "મોટું બોક્સ"],
+      "units": {
+        "piece": { "price": 28 },
+        "carton": { "price": 1300, "contains": { "qty": 50, "unit": "piece" } }
+      },
+      "min_order": { "qty": 2, "unit": "carton" }
+    },
+    {
+      "id": "tape",
+      "name": "Packing tape, 2 in brown — SAMPLE",
+      "aliases": ["tape", "packing tape", "टेप", "पैकिंग टेप", "ટેપ"],
+      "units": {
+        "piece": { "price": 35 },
+        "box": { "price": 1950, "contains": { "qty": 60, "unit": "piece" } }
+      }
+    }
+  ]
+}
