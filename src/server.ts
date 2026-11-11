@@ -10,8 +10,30 @@ import { itemMaths } from "./lead.ts";
 import { listModels, OllamaError, type OllamaOptions } from "./ollama.ts";
 import { Store } from "./store.ts";
 import type { Lang } from "./guard.ts";
+import { exotelAllowed, LOGIN_PAGE, loggedIn, sameSecret, sessionCookie, viaProxy } from "./auth.ts";
+import { notifierFromEnv, type Notifier } from "./notify.ts";
+import { speechFromEnv, type Speech } from "./speech.ts";
+import { handleExotel, handleWebCall } from "./transports.ts";
+import { acceptUpgrade } from "./ws.ts";
+import type { VoiceSession } from "./voice.ts";
 
-export interface Config { port: number; host: string; catalogPath: string; dataFile: string; ollama: OllamaOptions }
+export interface Config {
+  port: number; host: string; catalogPath: string; dataFile: string; ollama: OllamaOptions;
+  /** Dashboard password. Required before the server is reachable through a tunnel. */
+  password?: string;
+  /** Secret that Exotel must present on /exotel/ws. */
+  exotelToken?: string;
+  /** Speech for phone and web calls; without it only the typed simulator works. */
+  speech?: Speech;
+  notifier?: Notifier;
+  /** Language for calls that do not say which (Exotel custom parameter "lang" overrides). */
+  defaultLang: Lang;
+  /** The public "call us online" page. */
+  webCalls: boolean;
+  maxWebCalls: number;
+  publicUrl?: string;
+  log?: (m: string) => void;
+}
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const PUBLIC = join(ROOT, "public");
@@ -27,8 +49,20 @@ export function configFromEnv(env = process.env): Config {
     catalogPath: resolve(catalog),
     dataFile: resolve(env.HAANJI_DATA ?? join(ROOT, "data", "calls.json")),
     ollama: { host: (env.OLLAMA_HOST ?? "http://127.0.0.1:11434").replace(/\/$/, "").replace(/^(?!https?:\/\/)/, "http://"), model: env.HAANJI_MODEL ?? "gemma3:4b" },
+    password: env.HAANJI_PASSWORD || undefined,
+    exotelToken: env.HAANJI_EXOTEL_TOKEN || undefined,
+    speech: speechFromEnv(env),
+    notifier: notifierFromEnv(env),
+    defaultLang: LANGS.includes(env.HAANJI_LANG as Lang) ? (env.HAANJI_LANG as Lang) : "hi",
+    webCalls: env.HAANJI_WEB_CALLS !== "off",
+    maxWebCalls: Number(env.HAANJI_WEB_MAX ?? 2),
+    publicUrl: env.HAANJI_PUBLIC_URL?.replace(/\/$/, ""),
+    log: (m) => console.log(m),
   };
 }
+
+/** Pages anyone may open: the customer call page and what it needs. */
+const PUBLIC_PATHS = new Set(["/call", "/call.js", "/call-worklet.js", "/style.css", "/login"]);
 
 function send(res: ServerResponse, status: number, body: unknown, type = "application/json; charset=utf-8"): void {
   const data = typeof body === "string" || Buffer.isBuffer(body) ? body : JSON.stringify(body);
@@ -57,7 +91,8 @@ function csvCell(v: unknown): string {
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-export function makeServer(cfg: Config): { server: Server; store: Store; catalog: Catalog } {
+export function makeServer(cfgIn: Partial<Config> & Pick<Config, "port" | "host" | "catalogPath" | "dataFile" | "ollama">): { server: Server; store: Store; catalog: Catalog; sessions: Set<VoiceSession> } {
+  const cfg: Config = { defaultLang: "hi", webCalls: true, maxWebCalls: 2, ...cfgIn };
   const catalog = loadCatalog(cfg.catalogPath);
   const store = new Store(cfg.dataFile);
   const locks = new Map<string, Promise<unknown>>();
@@ -74,6 +109,31 @@ export function makeServer(cfg: Config): { server: Server; store: Store; catalog
       const path = url.pathname;
       const m = path.match(/^\/api\/calls\/([\w-]+)(\/(turn|end))?$/);
 
+      // Sign-in. With a password set, everything except the customer call page needs it.
+      // Without one, refuse requests that arrive through a tunnel: the dashboard holds customers' details.
+      if (path === "/login" && req.method === "POST") {
+        if (!cfg.password) return send(res, 404, { error: "No password is set." });
+        let body = "";
+        for await (const c of req) { body += c; if (body.length > 4096) break; }
+        const pw = new URLSearchParams(body).get("password") ?? "";
+        if (!sameSecret(pw, cfg.password)) return send(res, 401, LOGIN_PAGE("Wrong password."), "text/html; charset=utf-8");
+        res.writeHead(303, { location: "/dashboard", "set-cookie": sessionCookie(cfg.password) });
+        return res.end();
+      }
+      if (path === "/login") return send(res, 200, LOGIN_PAGE(), "text/html; charset=utf-8");
+      if (!PUBLIC_PATHS.has(path)) {
+        if (cfg.password && !loggedIn(req, cfg.password)) {
+          if (path.startsWith("/api/")) return send(res, 401, { error: "Sign in first." });
+          res.writeHead(303, { location: "/login" });
+          return res.end();
+        }
+        if (!cfg.password && viaProxy(req)) return send(res, 403, { error: "Set HAANJI_PASSWORD before opening Haanji to the internet." });
+      }
+      if (req.method === "GET" && path === "/call") {
+        if (!cfg.webCalls || !cfg.speech) return send(res, 404, { error: "Online calls are turned off." });
+        return send(res, 200, readFileSync(join(PUBLIC, "call.html")), TYPES[".html"]);
+      }
+
       if (req.method === "GET" && (path === "/" || path === "/dashboard" || /^\/[\w.-]+\.(js|css|svg|html)$/.test(path))) {
         const file = path === "/" ? "index.html" : path === "/dashboard" ? "dashboard.html" : path.slice(1);
         const full = join(PUBLIC, file);
@@ -84,7 +144,8 @@ export function makeServer(cfg: Config): { server: Server; store: Store; catalog
         let models: string[] = [], reachable = true, error = "";
         try { models = await listModels(cfg.ollama); } catch (e) { reachable = false; error = (e as Error).message; }
         const installed = models.some((n) => n === cfg.ollama.model || n === `${cfg.ollama.model}:latest`);
-        return send(res, 200, { ollama: { host: cfg.ollama.host, reachable, error, models }, model: cfg.ollama.model, modelInstalled: installed, business: catalog.business, sampleCatalog: !!catalog.sample, reviewNote: catalog.review_note ?? "" });
+        return send(res, 200, { ollama: { host: cfg.ollama.host, reachable, error, models }, model: cfg.ollama.model, modelInstalled: installed, business: catalog.business, sampleCatalog: !!catalog.sample, reviewNote: catalog.review_note ?? "",
+          speech: cfg.speech?.name ?? "off", telegram: !!cfg.notifier, webCalls: cfg.webCalls && !!cfg.speech, exotel: cfg.exotelToken ? "token set" : "local only", password: !!cfg.password, liveVoiceCalls: sessions.size });
       }
       if (req.method === "GET" && path === "/api/catalog") return send(res, 200, catalog);
       if (req.method === "GET" && path === "/api/calls") return send(res, 200, store.list().map((c) => view(c, catalog)));
@@ -151,16 +212,55 @@ export function makeServer(cfg: Config): { server: Server; store: Store; catalog
       send(res, 500, { error: "Something went wrong on the server. See the terminal for details." });
     }
   });
-  return { server, store, catalog };
+
+  // Phone (Exotel) and browser calls arrive as WebSocket upgrades.
+  const sessions = new Set<VoiceSession>();
+  let webCalls = 0;
+  server.on("upgrade", (req, socket) => {
+    const url = new URL(req.url ?? "/", "http://x");
+    const deps = { catalog, ollama: cfg.ollama, store, speech: cfg.speech!, notifier: cfg.notifier, dashboardUrl: cfg.publicUrl ? cfg.publicUrl + "/dashboard" : undefined, log: cfg.log };
+    const track = (h: { session: () => VoiceSession | undefined }, conn: { on: (e: string, f: () => void) => void }, onClose?: () => void) => {
+      const poll = setInterval(() => { const s = h.session(); if (s) { sessions.add(s); clearInterval(poll); void s.done.then(() => sessions.delete(s)); } }, 50);
+      conn.on("close", () => { clearInterval(poll); onClose?.(); });
+    };
+    if (url.pathname === "/exotel/ws") {
+      if (!cfg.speech) return void acceptUpgrade(req, socket, { status: 404, message: "speech is off" });
+      if (!exotelAllowed(req, url, cfg.exotelToken)) return void acceptUpgrade(req, socket, { status: 401, message: "bad token" });
+      const conn = acceptUpgrade(req, socket);
+      if (conn) track(handleExotel(conn, deps, cfg.defaultLang), conn);
+      return;
+    }
+    if (url.pathname === "/web/ws") {
+      if (!cfg.webCalls || !cfg.speech) return void acceptUpgrade(req, socket, { status: 404, message: "off" });
+      if (webCalls >= cfg.maxWebCalls) return void acceptUpgrade(req, socket, { status: 429, message: "busy" });
+      const conn = acceptUpgrade(req, socket);
+      if (!conn) return;
+      webCalls++;
+      const h = handleWebCall(conn, { ...deps, maxCallMs: 5 * 60_000 }, cfg.defaultLang);
+      track(h, conn, () => { webCalls--; });
+      return;
+    }
+    acceptUpgrade(req, socket, { status: 404, message: "not found" });
+  });
+  return { server, store, catalog, sessions };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  try { process.loadEnvFile(join(ROOT, ".env")); } catch { /* no .env: defaults and the real environment apply */ }
   const cfg = configFromEnv();
   const { server, catalog } = makeServer(cfg);
   server.listen(cfg.port, cfg.host, async () => {
     console.log(`Haanji is answering for ${catalog.business.name}${catalog.review_note ? ` (${catalog.review_note})` : ""}`);
     console.log(`  Call simulator: http://${cfg.host}:${cfg.port}/`);
-    console.log(`  Dashboard:      http://${cfg.host}:${cfg.port}/dashboard`);
+    console.log(`  Dashboard:      http://${cfg.host}:${cfg.port}/dashboard${cfg.password ? " (password on)" : " (no password: keep it on this computer)"}`);
+    console.log(`  Speech:         ${cfg.speech ? cfg.speech.name : "off (typed simulator only)"}${cfg.notifier ? ", Telegram on" : ""}`);
+    if (cfg.speech && cfg.webCalls) console.log(`  Online calls:   http://${cfg.host}:${cfg.port}/call`);
+    console.log(`  Exotel stream:  ws://${cfg.host}:${cfg.port}/exotel/ws${cfg.exotelToken ? "?key=…" : " (local tests only until HAANJI_EXOTEL_TOKEN is set)"}`);
+    if (cfg.speech?.name === "local") {
+      const url = process.env.HAANJI_SPEECH_URL ?? "http://127.0.0.1:5070";
+      try { const h = (await (await fetch(url + "/health", { signal: AbortSignal.timeout(3000) })).json()) as { device: string; fake: boolean }; console.log(`  Speech service: ${h.fake ? "FAKE (no models)" : "running on " + h.device}`); }
+      catch { console.log(`  ! Speech service not running at ${url}. Start it with: npm run speech`); }
+    }
     try {
       const models = await listModels(cfg.ollama);
       if (!models.some((n) => n === cfg.ollama.model || n === `${cfg.ollama.model}:latest`)) console.log(`  ! Model ${cfg.ollama.model} is not installed. Run: ollama pull ${cfg.ollama.model}`);

@@ -13,7 +13,7 @@ function rowHtml(c) {
   const offer = (o ? `${inr(o.price)}${o.per ? "/" + esc(o.per) : ""}<br><span class="flag">owner to confirm</span>` : "") + (guards ? `<br><span class="flag">${guards} reply blocked</span>` : "");
   const status = c.status === "live" ? STATUS.live : `<select data-id="${esc(c.id)}" aria-label="Status">${["new", "called_back", "won", "lost"].map((s) => `<option value="${s}"${s === c.status ? " selected" : ""}>${STATUS[s]}</option>`).join("")}</select>`;
   const detail = open.has(c.id) ? `<tr class="open"><td></td><td colspan="4">${c.summary ? `<p><b>Summary:</b> ${esc(c.summary)}</p>` : ""}<ol class="transcript">${c.turns.map((t) => `<li><b>${t.role === "caller" ? "Caller" : "Haanji"}:</b> ${esc(t.text)}${t.guard ? ` <span class="flag">(${esc(RULE_LABEL[t.guard.rule])}: “${esc(t.guard.blockedReply)}”)</span>` : ""}</li>`).join("")}</ol><p class="none">${esc(LANG_LABEL[c.language])} · model ${esc(c.model)}</p></td></tr>` : "";
-  return `<tr data-row="${esc(c.id)}" class="${open.has(c.id) ? "open" : ""}" style="cursor:pointer"><td class="when">${when(c.started_at)}</td><td>${who}</td><td>${wants}</td><td>${offer}</td><td>${status}</td></tr>${detail}`;
+  return `<tr data-row="${esc(c.id)}" class="${open.has(c.id) ? "open" : ""}" style="cursor:pointer"><td class="when">${when(c.started_at)}<br>${c.channel === "phone" ? "phone" : c.channel === "web" ? "online" : "simulator"}</td><td>${who}</td><td>${wants}</td><td>${offer}</td><td>${status}</td></tr>${detail}`;
 }
 
 function render() {

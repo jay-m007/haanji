@@ -1,18 +1,38 @@
 {
   "name": "haanji",
   "version": "0.1.0",
-  "description": "AI phone receptionist for small Indian manufacturers: takes enquiries in Hindi, Marathi, Gujarati and mixed speech with a local Ollama model, records quantities and bargaining offers, and never agrees a price on its own.",
+  "description": "AI phone receptionist for small Indian manufacturers: answers calls in Hindi, Marathi, Gujarati and mixed speech with a local Ollama model and free AI4Bharat speech models, records quantities and bargaining offers, and never agrees a price on its own.",
   "type": "module",
   "scripts": {
     "start": "node src/server.ts",
-    "test": "node --test --test-concurrency=1 \"test/**/*.test.ts\"",
+    "test": "node --test --test-concurrency=1 --test-timeout=30000 \"test/**/*.test.ts\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "eval": "node eval/run.ts"
+    "eval": "node eval/run.ts",
+    "speech": "python speech/server.py",
+    "speech:fake": "python speech/server.py --fake",
+    "telegram": "node scripts/telegram-setup.ts"
   },
-  "engines": { "node": ">=22.18" },
-  "keywords": ["ai-receptionist", "ollama", "hindi", "marathi", "gujarati", "lead-capture", "llm", "voice"],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "keywords": [
+    "ai-receptionist",
+    "ollama",
+    "hindi",
+    "marathi",
+    "gujarati",
+    "lead-capture",
+    "llm",
+    "voice"
+  ],
   "author": "Jay Maurya",
   "license": "MIT",
-  "repository": { "type": "git", "url": "https://github.com/jay-m007/haanji.git" },
-  "devDependencies": { "@types/node": "^22.18.0", "typescript": "5.9.3" }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jay-m007/haanji.git"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.0",
+    "typescript": "5.9.3"
+  }
 }

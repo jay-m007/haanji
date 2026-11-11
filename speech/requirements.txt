@@ -1,0 +1,8 @@
+# Install PyTorch with CUDA first, from https://pytorch.org/get-started/locally/ (pick your CUDA version), then:
+transformers
+torchaudio
+onnx==1.20.1
+onnxruntime-gpu==1.20.1
+soundfile
+numpy
+git+https://github.com/huggingface/parler-tts.git

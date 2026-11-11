@@ -3,3 +3,6 @@ data/*.json
 !data/.gitkeep
 *.tgz
 eval/results-*.json
+.env
+__pycache__/
+.venv/

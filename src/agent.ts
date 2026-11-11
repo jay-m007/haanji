@@ -19,6 +19,8 @@ export interface Call {
   intent?: string;
   summary?: string;
   errors: string[];
+  /** Where the call came from. Missing on calls saved before voice support (simulator). */
+  channel?: "simulator" | "phone" | "web";
 }
 
 export const LANG_NAMES: Record<Lang, string> = { hi: "Hindi", mr: "Marathi", gu: "Gujarati", en: "English", mixed: "the caller's mix of languages" };
@@ -33,8 +35,23 @@ export function greeting(c: Catalog, lang: Lang): string {
   }
 }
 
-export function newCall(id: string, c: Catalog, lang: Lang, model: string, now = new Date()): Call {
-  return { id, started_at: now.toISOString(), language: lang, model, turns: [{ role: "agent", text: greeting(c, lang), at: now.toISOString() }], lead: emptyLead(), status: "live", errors: [] };
+/** Said first on real calls: the caller must know they are talking to a machine and that the call is written down. */
+export function disclosure(c: Catalog, lang: Lang): string {
+  const n = c.business.name;
+  switch (lang) {
+    case "mr": return `हा ${n} चा ऑटोमॅटिक असिस्टंट आहे, बोलणं लिहून ठेवलं जातं.`;
+    case "gu": return `આ ${n} નો ઓટોમેટિક આસિસ્ટન્ટ છે, વાતચીત લખીને રાખવામાં આવે છે.`;
+    case "en": return `This is the automated assistant of ${n}; this call is written down.`;
+    default: return `यह ${n} का ऑटोमैटिक असिस्टेंट है, बातचीत लिखकर रखी जाती है।`;
+  }
+}
+
+export function newCall(id: string, c: Catalog, lang: Lang, model: string, now = new Date(), opts: { channel?: Call["channel"]; from?: string } = {}): Call {
+  const voice = opts.channel === "phone" || opts.channel === "web";
+  const lead = emptyLead();
+  if (opts.from) lead.phone = opts.from;
+  const text = voice ? `${disclosure(c, lang)} ${greeting(c, lang)}` : greeting(c, lang);
+  return { id, started_at: now.toISOString(), language: lang, model, turns: [{ role: "agent", text, at: now.toISOString() }], lead, status: "live", errors: [], channel: opts.channel ?? "simulator" };
 }
 
 const UNIT_ENUM = [...UNITS, ""];

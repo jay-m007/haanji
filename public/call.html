@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call S S Industries</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+  .callbox { max-width: 560px; margin: 0 auto; padding: 24px 20px 40px; }
+  .callbox h2 { margin: 6px 0 4px; font-size: 26px; }
+  .callbox p.lede { color: var(--ink-2); margin: 0 0 18px; }
+  .dial { width: 100%; padding: 16px; font-size: 20px; border-radius: 12px; }
+  .dial.hang { background: var(--stamp); border-color: var(--stamp); color: var(--paper); }
+  .langs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .langs label { border: 2px solid var(--ink); border-radius: 30px; padding: 4px 14px; cursor: pointer; }
+  .langs input { position: absolute; opacity: 0; }
+  .langs input:checked + span { font-weight: 700; }
+  .langs label:has(input:checked) { background: var(--ink); color: var(--paper); }
+  .langs label:has(input:focus-visible) { outline: 3px solid var(--margin); outline-offset: 2px; }
+  ol.captions { list-style: none; margin: 18px 0 0; padding: 0 0 0 16px; border-left: 2px solid var(--margin); min-height: 140px; }
+  ol.captions li { padding: 4px 0; }
+  ol.captions li b { font-weight: 600; color: var(--ink-2); font-size: 14px; margin-right: 6px; }
+  .state { margin-top: 12px; color: var(--ink-2); font-size: 15px; min-height: 22px; }
+</style>
+</head>
+<body>
+<header class="cover"><h1 id="biz">S S Industries</h1></header>
+<main class="callbox">
+  <h2>Talk to us now</h2>
+  <p class="lede">An automated assistant takes your enquiry: product, quantity and your name. The owner calls you back to confirm rates. Your words are written down for that.</p>
+  <div class="langs" role="radiogroup" aria-label="Language">
+    <label><input type="radio" name="lang" value="hi" checked><span>हिंदी</span></label>
+    <label><input type="radio" name="lang" value="mr"><span>मराठी</span></label>
+    <label><input type="radio" name="lang" value="gu"><span>ગુજરાતી</span></label>
+    <label><input type="radio" name="lang" value="en"><span>English</span></label>
+  </div>
+  <button class="btn primary dial" id="dial">Start call</button>
+  <div class="state" id="state" role="status"></div>
+  <ol class="captions" id="captions" aria-live="polite"></ol>
+</main>
+<script src="/call.js"></script>
+</body>
+</html>

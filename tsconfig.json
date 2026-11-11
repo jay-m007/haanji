@@ -16,7 +16,8 @@
   "include": [
     "src",
     "test",
-    "eval"
+    "eval",
+    "scripts"
   ],
   "exclude": [
     "test/fixtures"
